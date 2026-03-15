@@ -1,18 +1,11 @@
-# Use Python 3.11 slim image for smaller size
-FROM python:3.11-slim
+# Use Python 3.12 slim image for compatibility with the project
+FROM python:3.12-slim
 
 # Set working directory
 WORKDIR /app
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
-
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y gcc g++ && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
 COPY requirements.txt .
@@ -26,13 +19,6 @@ COPY . .
 
 # Create logs directory
 RUN mkdir -p logs
-
-# Expose port (if needed for health checks)
-EXPOSE 8000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import sys; sys.exit(0)" || exit 1
 
 # Run the application
 CMD ["python", "main.py"]

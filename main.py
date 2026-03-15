@@ -11,11 +11,10 @@ from configs.config_loader import Config
 from configs.logger import setup_logger
 
 # Setup logging early
-setup_logger()
-logger = logging.getLogger(__name__)
-
 # Load configuration BEFORE importing modules that use it
 Config.load()
+setup_logger()
+logger = logging.getLogger(__name__)
 
 # Now import modules that depend on Config
 from trading_engine import TradingEngine
