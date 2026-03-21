@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY . .
 
 # Create logs directory
-RUN mkdir -p logs
+RUN mkdir -p /app/logs
 
 # Run the application
 CMD ["python", "main.py"]
