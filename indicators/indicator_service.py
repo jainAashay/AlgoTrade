@@ -33,6 +33,10 @@ class IndicatorService:
                 length = cfg.get("length", 7)
                 df[f"ema_{length}"] = ta.ema(df["close"], length=length)
 
+            elif name == "sma":
+                length = cfg.get("length", 7)
+                df[f"sma_{length}"] = ta.sma(df["close"], length=length)
+
             elif name == "rsi":
                 length = cfg.get("length", 7)
                 df[f"rsi_{length}"] = ta.rsi(df["close"], length=length)
