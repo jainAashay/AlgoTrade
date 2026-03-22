@@ -15,8 +15,8 @@ instruments:
     take_profit_pct: 0.04  # 0.25%
     trailing_amount_pct: 0.01  # 1%
     strategy:
-      name: sma_strategy
-      class: SMAStrategy
+      name: simple_sma_strategy
+      class: SimpleSMAStrategy
       min_move_percent: 0.5
       indicators:
         - name: ema
@@ -33,8 +33,8 @@ instruments:
     take_profit_pct: 0.04  # 0.25%
     trailing_amount_pct: 0.01  # 1%
     strategy:
-      name: sma_strategy
-      class: SMAStrategy
+      name: simple_sma_strategy
+      class: SimpleSMAStrategy
       min_move_percent: 0.7
       indicators:
         - name: ema
