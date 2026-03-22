@@ -40,7 +40,7 @@ def main():
 
     # Run trading engine (blocking)
     try:
-        engine.run(loop_interval=5)
+        engine.run(loop_interval=10)
     except KeyboardInterrupt:
         logger.info("Trading system stopped by user")
     except Exception as e:
