@@ -6,7 +6,6 @@ import logging
 import math
 from datetime import datetime, timezone, timedelta
 
-from configs.config_loader import Config
 from typing import List, Dict, Any
 from utils.common_utils import CommonUtils, get_common_utils
 
@@ -25,8 +24,10 @@ class RiskManager:
         risk_config = inst.get("risk")
         time_frame = risk_config.get("time_frame")
         max_trades = risk_config.get("max_trades")
+        fill_interval = risk_config.get("fill_interval",180)
 
         seconds = CommonUtils.resolution_to_seconds(time_frame)
+        fill_interval_in_minutes = int(CommonUtils.resolution_to_seconds(fill_interval) / 60 )
 
         # Get fills for the last 24 hours (example interval)
         end_time = int(time.time() * 1_000_000)  # microseconds
@@ -40,7 +41,7 @@ class RiskManager:
         now_utc = datetime.now(timezone.utc)
         time_diff = now_utc - latest_time
         recent_fill = False
-        if time_diff < timedelta(minutes=3):
+        if time_diff < timedelta(minutes=fill_interval_in_minutes):
             logger.info("Recent fill is within last 3 minutes.")
             recent_fill = True
 
