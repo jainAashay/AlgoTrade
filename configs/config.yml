@@ -9,11 +9,11 @@ exchange:
 instruments:
   - symbol: RIVERUSD
     quantity: 1
-    resolution: 5m
+    resolution: 3m
     bootstrap_length: 300
     leverage: 20
-    take_profit_pct: 0.05  # 0.25%
-    stop_loss_pct: 0.01  # 1%
+    take_profit_pct: 0.04  # 0.25%
+    stop_loss_pct: 0.012  # 1.2%
     strategy:
       name: simple_sma_strategy
       class: SimpleSMAStrategy
@@ -28,11 +28,11 @@ instruments:
 
   - symbol: PIPPINUSD
     quantity: 2
-    resolution: 5m
+    resolution: 3m
     bootstrap_length: 300
     leverage: 20
     take_profit_pct: 0.04  # 0.25%
-    stop_loss_pct: 0.01  # 1%
+    stop_loss_pct: 0.012  # 1%
     strategy:
       name: simple_sma_strategy
       class: SimpleSMAStrategy

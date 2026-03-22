@@ -49,9 +49,9 @@ class SimpleSMAStrategy(StrategyBase):
         # ENTRY
         # =========================================================
         no_position = not position or position.get("size", 0) == 0
+        logger.info(f"Current Position : {position}")
 
         if no_position:
-
             if bullish_ema and move_condition and curr_bullish:
                 logger.info(f"{symbol} ENTER LONG")
                 return {"signal": "ENTER_LONG", "side": "buy"}
@@ -64,13 +64,13 @@ class SimpleSMAStrategy(StrategyBase):
         # EXIT / REVERSE
         # =========================================================
         else:
-            position_side = position.get("side")
+            size = position.get("size",0)
 
-            if position_side == "buy" and bearish_ema:
+            if size > 0 and bearish_ema:
                 logger.info(f"{symbol} EXIT LONG")
                 return {"signal": "EXIT_LONG", "side": "sell"}
 
-            if position_side == "sell" and bullish_ema:
+            if size < 0  and bullish_ema:
                 logger.info(f"{symbol} EXIT SHORT")
                 return {"signal": "EXIT_SHORT", "side": "buy"}
 
