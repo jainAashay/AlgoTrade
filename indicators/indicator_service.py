@@ -63,8 +63,7 @@ class IndicatorService:
             elif name == "adx":
                 length = cfg.get("length", 14)
                 adx = ta.adx(df["high"], df["low"], df["close"], length=length)
-                df["adx"] = adx[f"ADX_{length}"]
-
+                df[f"adx_{length}"] = adx[f"ADX_{length}"]
 
             elif name == "natr":
                 length = cfg.get("length", 14)
