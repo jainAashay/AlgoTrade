@@ -3,6 +3,7 @@ Trading engine module.
 """
 import time
 import logging
+import threading
 from typing import Dict, Any
 
 from configs.config_loader import Config
@@ -14,6 +15,27 @@ from exceptions import OrderError, RiskManagementError
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 logger = logging.getLogger(__name__)
+
+_SYSTEM_MODE = "BIR"
+_SYSTEM_MODE_LOCK = threading.Lock()
+
+
+def set_system_mode(mode: str) -> str:
+    """Set global system mode. Supported values: BIR, OOR."""
+    normalized_mode = mode.strip().upper()
+    if normalized_mode not in {"BIR", "OOR"}:
+        raise ValueError(f"Unsupported mode: {mode}")
+
+    global _SYSTEM_MODE
+    with _SYSTEM_MODE_LOCK:
+        _SYSTEM_MODE = normalized_mode
+    return _SYSTEM_MODE
+
+
+def get_system_mode() -> str:
+    """Get global system mode."""
+    with _SYSTEM_MODE_LOCK:
+        return _SYSTEM_MODE
 
 
 class TradingEngine:
@@ -138,6 +160,12 @@ class TradingEngine:
 
             while True:
                 try:
+                    current_mode = get_system_mode()
+                    if current_mode != "BIR":
+                        logger.info("System mode is OOR. Skipping trading iteration.")
+                        time.sleep(loop_interval)
+                        continue
+
                     # Submit all instruments in parallel
                     futures = [
                         executor.submit(self._process_instrument, inst)

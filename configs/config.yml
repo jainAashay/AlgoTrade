@@ -7,46 +7,26 @@ exchange:
   api_secret: ${DELTA_API_SECRET}
 
 instruments:
-#  - symbol: RIVERUSD
-#    quantity: 1
-#    resolution: 3m
-#    bootstrap_length: 300
-#    leverage: 20
-#    take_profit_pct: 0.04  # 0.25%
-#    stop_loss_pct: 0.012  # 1.2%
-#    strategy:
-#      name: simple_sma_strategy
-#      class: SimpleSMAStrategy
-#      min_move_percent: 0.3
-#      adx_move_percent: 5
-#      indicators:
-#        - name: ema
-#          length: 5
-#        - name: adx
-#          length: 9
-#    risk:
-#      max_trades: 20
-#      time_frame: 24h
-#      fill_interval: 5m
-
-  - symbol: ETHUSD
-    quantity: 4
+  - symbol: RIVERUSD
+    quantity: 1
     resolution: 3m
     bootstrap_length: 300
-    leverage: 50
-    take_profit_pct: 0.003  # 0.25%
-    stop_loss_pct: 0.002  # 1%
+    leverage: 10
+    take_profit_pct: 0.04  # 0.25%
+    stop_loss_pct: 0.02  # 1.2%
     strategy:
       name: simple_sma_strategy
       class: SimpleSMAStrategy
-      min_move_percent: 0.035
+      min_move_percent: 0.3
       indicators:
         - name: ema
           length: 5
+        - name: ema
+          length: 13
     risk:
-      max_trades: 200
+      max_trades: 50
       time_frame: 24h
-      fill_interval: 5m
+      fill_interval: 3m
 
 execution:
   order_type: market
