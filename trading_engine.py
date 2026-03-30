@@ -71,6 +71,12 @@ class TradingEngine:
                 self.order_manager.change_leverage(symbol, leverage)
                 logger.info(f"Set leverage for {symbol} to {leverage}x")
 
+    def reinitialize_candles(self) -> None:
+        """Re-bootstrap candles for all configured instruments."""
+        logger.info("Reinitializing candles for all instruments")
+        self._initialize_instruments()
+        logger.info("Candle reinitialization completed")
+
     def _place_order(self, symbol: str, signal: Dict[str, Any], inst: Dict[str, Any]) -> None:
         logger.info(f"Signal generated: {signal}")
         try:

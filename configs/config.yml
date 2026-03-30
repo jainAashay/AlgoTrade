@@ -17,7 +17,7 @@ instruments:
     strategy:
       name: simple_sma_strategy
       class: SimpleSMAStrategy
-      min_move_percent: 0.3
+      min_move_percent: 0.2
       indicators:
         - name: ema
           length: 5

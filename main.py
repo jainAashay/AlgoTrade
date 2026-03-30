@@ -23,14 +23,21 @@ from trading_engine import get_system_mode, set_system_mode
 from rest_client.web_socket_client import WebSocketClient
 
 
-def _start_control_api() -> None:
+def _start_control_api(engine: TradingEngine) -> None:
     """Start control API for changing system mode."""
     app = Flask(__name__)
 
     @app.route("/system/bir", methods=["POST", "GET"])
     def set_bir():
+        previous_mode = get_system_mode()
+        if previous_mode == "OOR":
+            engine.reinitialize_candles()
         mode = set_system_mode("BIR")
-        return jsonify({"status": "ok", "mode": mode}), 200
+
+        return jsonify({
+            "status": "ok",
+            "mode": mode
+        }), 200
 
     @app.route("/system/oor", methods=["POST", "GET"])
     def set_oor():
@@ -43,7 +50,6 @@ def _start_control_api() -> None:
 def main():
     """Main function to start the trading system."""
     logger.info("AlgoTrading system starting")
-    set_system_mode("OOR")
     logger.info(f"Default system mode set to {get_system_mode()}")
 
     # Initialize trading engine
@@ -59,7 +65,7 @@ def main():
     ws_thread.start()
     logger.info("WebSocket client started in background thread")
 
-    api_thread = threading.Thread(target=_start_control_api, daemon=True)
+    api_thread = threading.Thread(target=_start_control_api, args=(engine,), daemon=True)
     api_thread.start()
     logger.info("Control API started in background thread on port 5000")
 
