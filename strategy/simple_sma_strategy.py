@@ -23,7 +23,7 @@ class SimpleSMAStrategy(StrategyBase):
         # === CLOSED CANDLES ===
         curr = df.iloc[-2]   # last closed
         prev = df.iloc[-3]
-        prev_candles = df.iloc[-6:-2]  # last 4 candles
+        prev_candles = df.iloc[-4:-2]  # last 4 candles
 
         # === EMA CHECK ===
         if "ema_5" not in df.columns or "ema_13" not in df.columns:

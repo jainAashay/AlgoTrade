@@ -6,7 +6,6 @@ from strategy.base import StrategyBase
 
 logger = logging.getLogger(__name__)
 
-
 class SMAStrategy(StrategyBase):
 
     def generate_signal(self,symbol: str,position: Optional[Dict[str, Any]],instrument_config: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
@@ -14,91 +13,72 @@ class SMAStrategy(StrategyBase):
         market_data = get_data_manager().market_data
         df = market_data.get(symbol, {}).get(self.config["resolution"])
 
-        if df is None or len(df) < 5:
+        if df is None or len(df) < 10:
             logger.warning(f"Insufficient data for {symbol}")
             return None
 
-        # === CONFIG ===
         strategy_config = self.config.get("strategy", {})
         min_move_percent = strategy_config.get("min_move_percent", 0.5)
 
         # === CLOSED CANDLES ===
-        curr = df.iloc[-2]   # last closed
-        prev = df.iloc[-3]   # previous closed
+        curr = df.iloc[-2]   # last closed candle
+        prev = df.iloc[-3]
 
         # === EMA CHECK ===
-        if "ema_5" not in df.columns:
-            logger.warning(f"ema_5 column not found in data for {symbol}")
+        if "ema_5" not in df.columns or "ema_13" not in df.columns:
+            logger.warning(f"EMA columns not found for {symbol}")
             return None
 
-        ema_now = df["ema_5"].iloc[-2]
-        ema_prev = df["ema_5"].iloc[-3]
+        ema5_now = df["ema_5"].iloc[-2]
+        ema5_prev = df["ema_5"].iloc[-3]
+        ema13 = df["ema_13"].iloc[-2]
 
-        if ema_prev is None or ema_prev == 0:
+        if not ema5_prev:
             return None
 
-        ema_move_percent = ((ema_now - ema_prev) / ema_prev) * 100
-
-        bullish_ema = ema_move_percent > 0
-        bearish_ema = ema_move_percent < 0
-        move_condition = abs(ema_move_percent) >= min_move_percent
-
+        # === EMA % MOVE ===
+        ema_move_percent = ((ema5_now - ema5_prev) / ema5_prev) * 100
         logger.info(f"{symbol} EMA5 move %: {ema_move_percent:.4f}")
 
-        # === CANDLE DIRECTION ===
+        move_condition = abs(ema_move_percent) >= min_move_percent
+
+        # === YOUR CONDITIONS ===
+        gap_up = curr["open"] >= prev["close"]
+        gap_down = curr["open"] < prev["close"]
+
+        bullish_trend = ema5_now > ema13
+        bearish_trend = ema5_now < ema13
+
+        # === CANDLE DIRECTION (NEW ADDITION) ===
         curr_bullish = curr["close"] > curr["open"]
         curr_bearish = curr["close"] < curr["open"]
 
-        prev_bullish = prev["close"] > prev["open"]
-        prev_bearish = prev["close"] < prev["open"]
-
-        # === BOTH CANDLES SAME DIRECTION ===
-        bullish_candles = curr_bullish and prev_bullish
-        bearish_candles = curr_bearish and prev_bearish
-
         # =========================================================
-        # === ENTRY CONDITIONS (only if NOT in position)
+        # ENTRY
         # =========================================================
-        if not position and position.get("size",0)==0:
+        no_position = not position or position.get("size", 0) == 0
 
-            long_signal = ( bullish_ema and move_condition and bullish_candles )
-
-            short_signal = ( bearish_ema and move_condition and bearish_candles )
-
-            if long_signal:
+        if no_position:
+            if gap_up and bullish_trend and move_condition and curr_bullish:
                 logger.info(f"{symbol} ENTER LONG")
-                return {
-                    "signal": "ENTER_LONG",
-                    "side": "buy"
-                }
+                return {"signal": "ENTER_LONG", "side": "buy"}
 
-            if short_signal:
+            if gap_down and bearish_trend and move_condition and curr_bearish:
                 logger.info(f"{symbol} ENTER SHORT")
-                return {
-                    "signal": "ENTER_SHORT",
-                    "side": "sell"
-                }
+                return {"signal": "ENTER_SHORT", "side": "sell"}
 
         # =========================================================
-        # === EXIT / REVERSE CONDITIONS (if already in position)
+        # EXIT
         # =========================================================
         else:
-            position_side = position.get("side")
+            size = position.get("size", 0)
 
-            # If in LONG and EMA turns bearish → exit/reverse
-            if position_side == "buy" and bearish_ema :
-                logger.info(f"{symbol} EXIT LONG / ENTER SHORT")
-                return {
-                    "signal": "EXIT_LONG",
-                    "side": "sell"
-                }
+            if size > 0 and ema5_now < ema13:
+                logger.info(f"{symbol} EXIT LONG")
+                return {"signal": "EXIT_LONG", "side": "sell"}
 
-            # If in SHORT and EMA turns bullish → exit/reverse
-            if position_side == "sell" and bullish_ema :
-                logger.info(f"{symbol} EXIT SHORT / ENTER LONG")
-                return {
-                    "signal": "EXIT_SHORT",
-                    "side": "buy"
-                }
+            if size < 0 and ema5_now > ema13:
+                logger.info(f"{symbol} EXIT SHORT")
+                return {"signal": "EXIT_SHORT", "side": "buy"}
 
         return None

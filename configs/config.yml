@@ -9,14 +9,35 @@ exchange:
 instruments:
   - symbol: RIVERUSD
     quantity: 1
-    resolution: 3m
+    resolution: 1m
     bootstrap_length: 300
     leverage: 10
-    take_profit_pct: 0.04  # 0.25%
-    stop_loss_pct: 0.02  # 1.2%
+    take_profit_pct: 0.0025  # 0.25%
+    stop_loss_pct: 0.015  # 1.2%
     strategy:
-      name: simple_sma_strategy
-      class: SimpleSMAStrategy
+      name: sma_strategy
+      class: SMAStrategy
+      min_move_percent: 0.1
+      indicators:
+        - name: ema
+          length: 5
+        - name: ema
+          length: 13
+    risk:
+      max_trades: 50
+      time_frame: 24h
+      fill_interval: 1m
+
+  - symbol: PIPPINUSD
+    quantity: 2
+    resolution: 1m
+    bootstrap_length: 300
+    leverage: 10
+    take_profit_pct: 0.0025  # 0.25%
+    stop_loss_pct: 0.015  # 1.2%
+    strategy:
+      name: sma_strategy
+      class: SMAStrategy
       min_move_percent: 0.2
       indicators:
         - name: ema
@@ -26,7 +47,7 @@ instruments:
     risk:
       max_trades: 50
       time_frame: 24h
-      fill_interval: 3m
+      fill_interval: 1m
 
 execution:
   order_type: market
