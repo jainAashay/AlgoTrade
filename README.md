@@ -3,7 +3,7 @@
 An algorithmic trading application that connects to **Delta Exchange** (REST + WebSocket), maintains in-memory OHLCV candles with technical indicators, evaluates **per-instrument strategies** on a timed loop, and places live orders along with **risk** and **order** management with YAML-driven configuration.
 
 ## High-level Interaction Diagram :
-![HLD.png](HLD.png)
+<img width="1191" height="611" alt="HLD" src="https://github.com/user-attachments/assets/1e782e76-03f5-4f39-bec5-5c904e2b38f3" />
 
 ### Major capabilities
 
