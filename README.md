@@ -1,4 +1,4 @@
-# AlgoTrade
+# TradePulse
 
 An algorithmic trading application that connects to **Delta Exchange** (REST + WebSocket), maintains in-memory OHLCV candles with technical indicators, evaluates **per-instrument strategies** on a timed loop, and places live orders along with **risk** and **order** management with YAML-driven configuration.
 
